@@ -12,23 +12,37 @@ provider "azurerm" {
 }
 
 #Resource Group
-resource "azurerm_resource_group" "terraform-learning-rg" {
-  name     = "terraform-learning-rg"
+resource "azurerm_resource_group" "g5-rg" {
+  name     = "g5-rg"
   location = "South Africa North"
 }
 
 #Create Virtual Network
 resource "azurerm_virtual_network" "g5-vnet" {
   name                = "g5-vnet"
-  location            = azurerm_resource_group.terraform-learning-rg.location
-  resource_group_name = azurerm_resource_group.terraform-learning-rg.name
+  location            = azurerm_resource_group.g5-rg.location
+  resource_group_name = azurerm_resource_group.g5-rg.name
   address_space       = ["10.0.0.0/16"]
 }
 
 # Subnet Creation
-resource "azurerm_subnet" "g5-subnet" {
-  name                 = "g5-subnet"
-  resource_group_name  = azurerm_resource_group.terraform-learning-rg.name
+resource "azurerm_subnet" "frontend-subnet" {
+  name                 = "frontend-subnet"
+  resource_group_name  = azurerm_resource_group.g5-rg.name
   virtual_network_name = azurerm_virtual_network.g5-vnet.name
   address_prefixes     = ["10.0.1.0/24"]
+}
+
+resource "azurerm_subnet" "backend-subnet" {
+  name                 = "backend-subnet"
+  resource_group_name  = azurerm_resource_group.g5-rg.name
+  virtual_network_name = azurerm_virtual_network.g5-vnet.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_subnet" "database-subnet" {
+  name                 = "database-subnet"
+  resource_group_name  = azurerm_resource_group.g5-rg.name
+  virtual_network_name = azurerm_virtual_network.g5-vnet.name
+  address_prefixes     = ["10.0.3.0/24"]
 }
