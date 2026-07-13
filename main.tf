@@ -55,3 +55,22 @@ resource "azurerm_public_ip" "g5-ip" {
   allocation_method   = "Static"
   sku                 = "Standard"
 }  
+
+# Create NSG
+resource "azurerm_network_security_group" "frontend-nsg"{
+  name                = "frontend-nsg"
+  location            = azurerm_resource_group.g5-rg.location
+  resource_group_name = azurerm_resource_group.g5-rg.name
+
+  security_rule {
+    name                       = "Allow-SSH"
+    priority                   = "100"
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
