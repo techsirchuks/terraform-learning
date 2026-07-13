@@ -46,3 +46,12 @@ resource "azurerm_subnet" "database-subnet" {
   virtual_network_name = azurerm_virtual_network.g5-vnet.name
   address_prefixes     = ["10.0.3.0/24"]
 }
+
+# Create Public IP
+resource "azurerm_public_ip" "g5-ip" {
+  name                = "g5-ip"
+  resource_group_name = azurerm_resource_group.g5-rg.name
+  location            = azurerm_resource_group.g5-rg.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}  
