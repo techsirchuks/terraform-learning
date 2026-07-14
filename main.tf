@@ -62,6 +62,8 @@ resource "azurerm_network_security_group" "frontend-nsg"{
   location            = azurerm_resource_group.g5-rg.location
   resource_group_name = azurerm_resource_group.g5-rg.name
 
+  # NSG rule forallowing port 22
+
   security_rule {
     name                       = "Allow-SSH"
     priority                   = "100"
