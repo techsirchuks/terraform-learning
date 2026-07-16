@@ -48,31 +48,64 @@ resource "azurerm_subnet" "database-subnet" {
 }
 
 # Create Public IP
-resource "azurerm_public_ip" "g5-ip" {
-  name                = "g5-ip"
+resource "azurerm_public_ip" "frontend-ip" {
+  name                = "frontend-ip"
   resource_group_name = azurerm_resource_group.g5-rg.name
   location            = azurerm_resource_group.g5-rg.location
   allocation_method   = "Static"
   sku                 = "Standard"
-}  
+}
 
 # Create NSG
-resource "azurerm_network_security_group" "frontend-nsg"{
+resource "azurerm_network_security_group" "frontend-nsg" {
   name                = "frontend-nsg"
   location            = azurerm_resource_group.g5-rg.location
   resource_group_name = azurerm_resource_group.g5-rg.name
+}
 
-  # NSG rule forallowing port 22
+#NSG rule for allowing port 80
+resource "azurerm_network_security_rule" "allow-http" {
+  name                        = "allow-http"
+  priority                    = "100"
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.g5-rg.name
+  network_security_group_name = azurerm_network_security_group.frontend-nsg.name
+}
 
-  security_rule {
-    name                       = "Allow-SSH"
-    priority                   = "100"
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
+
+#NSG rule for allowing port 443
+resource "azurerm_network_security_rule" "allow-https" {
+  name                        = "allow-https"
+  priority                    = "120"
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.g5-rg.name
+  network_security_group_name = azurerm_network_security_group.frontend-nsg.name
+}
+
+
+#NSG Rule to open port 22
+resource "azurerm_network_security_rule" "allow-SSH" {
+  name                        = "allow-SSH"
+  priority                    = "300"
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.g5-rg.name
+  network_security_group_name = azurerm_network_security_group.frontend-nsg.name
 }
