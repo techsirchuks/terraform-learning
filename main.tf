@@ -95,6 +95,22 @@ resource "azurerm_network_security_rule" "allow-https" {
 }
 
 
+#NSG rule for denying all other traffic
+resource "azurerm_network_security_rule" "deny-all" {
+  name                        = "deny-all"
+  priority                    = "4096"
+  direction                   = "Inbound"
+  access                      = "Deny"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.g5-rg.name
+  network_security_group_name = azurerm_network_security_group.frontend-nsg.name
+}
+
+
 #NSG Rule to open port 22
 resource "azurerm_network_security_rule" "allow-SSH" {
   name                        = "allow-SSH"
