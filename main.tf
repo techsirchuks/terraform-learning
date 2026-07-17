@@ -125,3 +125,18 @@ resource "azurerm_network_security_rule" "allow-SSH" {
   resource_group_name         = azurerm_resource_group.g5-rg.name
   network_security_group_name = azurerm_network_security_group.frontend-nsg.name
 }
+
+
+#NIC for the VM
+resource "azurerm_network_interface" "g5-nic" {
+  name                = "g5-nic"
+  location            = azurerm_resource_security_group.g5-rg.name 
+  resource_group_name = azurerm_resource_group.g5-rg.name 
+
+  ip_configuration {
+    name                          = "front-ip"
+    subnet_id                     = azurerm_subnet.frontend-subnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.frontend-ip.id
+   }
+}
