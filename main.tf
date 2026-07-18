@@ -176,5 +176,5 @@ resource "azurerm_linux_virtual_machine" "g5-vm" {
   }
 }
 output "vm_public_ip" {
-  value = "azurerm_public_ip.g5-vm.address"
+  value = "azurerm_public_ip.g5-vm.ip_address"
 }
