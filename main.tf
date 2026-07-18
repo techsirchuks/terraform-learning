@@ -130,13 +130,51 @@ resource "azurerm_network_security_rule" "allow-SSH" {
 #NIC for the VM
 resource "azurerm_network_interface" "g5-nic" {
   name                = "g5-nic"
-  location            = azurerm_resource_security_group.g5-rg.name 
-  resource_group_name = azurerm_resource_group.g5-rg.name 
+  location            = azurerm_resource_group.g5-rg.location
+  resource_group_name = azurerm_resource_group.g5-rg.name
 
   ip_configuration {
     name                          = "front-ip"
     subnet_id                     = azurerm_subnet.frontend-subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id = azurerm_public_ip.frontend-ip.id
-   }
+    public_ip_address_id          = azurerm_public_ip.frontend-ip.id
+  }
+}
+
+#NIC Association
+resource "azurerm_network_interface_security_group_association" "g5-nic-asso" {
+  network_interface_id      = azurerm_network_interface.g5-nic.id
+  network_security_group_id = azurerm_network_security_group.frontend-nsg.id
+}
+
+#LInux VM Creation
+resource "azurerm_linux_virtual_machine" "g5-vm" {
+  name                = "g5-vm"
+  resource_group_name = azurerm_resource_group.g5-rg.name
+  location            = azurerm_resource_group.g5-rg.location
+  size                = "Standard_B2ts_v2"
+  admin_username      = "azureuser"
+  network_interface_ids = [
+    azurerm_network_interface.g5-nic.id
+  ]
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = file("~/.ssh/id_rsa.pub")
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "Ubuntu-24_04-lts"
+    sku       = "server"
+    version   = "latest"
+  }
+}
+output "vm_public_ip" {
+  value = "azurerm_public_ip.g5-vm.address"
 }
