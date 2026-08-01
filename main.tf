@@ -16,7 +16,7 @@ resource "azurerm_resource_group" "g5-rg" {
   name     = "g5-rg"
   location = "South Africa North"
   tags = {
-  environment = "learning"
+  environment = "learnings"
 }
 }
 
